@@ -34,14 +34,17 @@ public class HelloController {
     @Autowired
     private TaskService taskService;
 
-    @RequestMapping("/hi")
-    public String hello() {
-        return "index";
+    @RequestMapping("/")
+    public ModelAndView hello() {
+        ModelAndView modelAndView = new ModelAndView("my-task");
+        List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned("1").active().list();
+        modelAndView.addObject("taskList", taskList);
+        return modelAndView;
     }
 
     @RequestMapping("/is-listesi")
     public ModelAndView processList() {
-        ModelAndView modelAndView = new ModelAndView("index");
+        ModelAndView modelAndView = new ModelAndView("is-listesi");
         DeploymentModel deployment = new DeploymentModel();
         List<ProcessDefinition> deployments = repositoryService.createProcessDefinitionQuery().latestVersion().active().list();
         deployment.setProcessDefinitionList(deployments);
@@ -51,7 +54,7 @@ public class HelloController {
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.GET)
     public ModelAndView getStartProcess(@PathVariable String id) {
-        ModelAndView modelAndView = new ModelAndView("first");
+        ModelAndView modelAndView = new ModelAndView("veri-girisi");
         Content content = new Content();
         content.setProcessId(id);
         modelAndView.addObject("model", content);
@@ -60,7 +63,7 @@ public class HelloController {
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.POST)
     public ModelAndView startProcess(@PathVariable String id, @ModelAttribute Content content) {
-        ModelAndView modelAndView = new ModelAndView("index");
+        ModelAndView modelAndView = new ModelAndView("redirect:/mytask");
         Map<String, Object> variables = new HashMap<>();
         variables.put("whom", content.getWhom());
         variables.put("price", content.getPrice());
@@ -71,9 +74,15 @@ public class HelloController {
 
     @RequestMapping(value = "/mytask", method = RequestMethod.GET)
     public ModelAndView getMyTask() {
-        ModelAndView modelAndView = new ModelAndView("task");
+        ModelAndView modelAndView = new ModelAndView("my-task");
         List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned("1").active().list();
         modelAndView.addObject("taskList", taskList);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/template", method = RequestMethod.GET)
+    public ModelAndView getTemplate() {
+        ModelAndView modelAndView = new ModelAndView("form");
         return modelAndView;
     }
 }
