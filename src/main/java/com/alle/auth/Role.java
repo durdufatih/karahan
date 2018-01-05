@@ -3,7 +3,6 @@ package com.alle.auth;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "role")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

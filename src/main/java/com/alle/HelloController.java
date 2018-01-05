@@ -33,10 +33,7 @@ import java.util.Map;
  * @author Mehmet Fatih Durdu
  */
 @Controller
-public class
-
-
-HelloController {
+public class HelloController {
 
     @Autowired
     private RepositoryService repositoryService;

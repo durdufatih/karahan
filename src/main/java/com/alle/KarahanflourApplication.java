@@ -8,6 +8,8 @@ public class KarahanflourApplication {
 
 
     public static void main(String[] args) {
+
         SpringApplication.run(KarahanflourApplication.class, args);
+
     }
 }

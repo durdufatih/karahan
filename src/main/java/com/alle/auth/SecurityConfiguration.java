@@ -1,6 +1,7 @@
 package com.alle.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -45,11 +46,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
 		http.
 			authorizeRequests()
-				.antMatchers("/login").permitAll()
+				.antMatchers("/**").permitAll()
 				.antMatchers("/registration").permitAll()
-				.antMatchers("/vendors/bootstrap/dist/css/**").permitAll()
-				.antMatchers("/vendors/font-awesome/css/font-awesome.min.css").permitAll()
-				.antMatchers("/**").authenticated()
+				.antMatchers("/static/**").permitAll()
 				.antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
 				.authenticated().and().csrf().disable().formLogin()
 				.loginPage("/login").failureUrl("/login?error=true")
@@ -62,11 +61,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.accessDeniedPage("/access-denied");
 	}
 	
-	/*@Override
+	@Override
 	public void configure(WebSecurity web) throws Exception {
-	    /*web
+	    web
 	       .ignoring()
-	       .antMatchers("/resources/**","/static/build/**","/static/vendors/**", "/static/**", "/css/**", "/js/**", "/images/**");
-	}*/
+	       .antMatchers("/dist/**","/plugins/**","/bower_components/**","/resources/**","/static/build/**","/static/vendors/**", "/static/**", "/css/**", "/js/**", "/images/**");
+	}
 
 }
