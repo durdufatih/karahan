@@ -13,7 +13,7 @@
         <activiti:formProperty id="priority" name="İvedi" type="long"/>
       </extensionElements>
     </userTask>
-    <userTask activiti:assignee="1" activiti:exclusive="true" id="_4" name="Mal Yükleme"/>
+    <userTask activiti:assignee="2" activiti:exclusive="true" id="_4" name="Mal Yükleme"/>
     <endEvent id="_5" name="EndEvent"/>
     <sequenceFlow id="_7" sourceRef="userTask" targetRef="_4"/>
     <sequenceFlow id="_8" sourceRef="_4" targetRef="_5"/>

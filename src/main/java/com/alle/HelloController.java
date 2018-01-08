@@ -1,28 +1,29 @@
 package com.alle;
 
+import com.alle.auth.UserService;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +45,12 @@ public class HelloController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping("/home")
     public ModelAndView hello() {
-        ModelAndView modelAndView = new ModelAndView("template");
+        ModelAndView modelAndView = new ModelAndView("first");
         List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned("1").active().list();
         modelAndView.addObject("taskList", taskList);
         return modelAndView;
@@ -56,7 +60,6 @@ public class HelloController {
     public ModelAndView detail() {
 
         ModelAndView modelAndView = new ModelAndView("process-detail");
-
         modelAndView.addObject("model", new ProcessDefinitionModel());
         return modelAndView;
     }
@@ -78,8 +81,8 @@ public class HelloController {
     }
     @RequestMapping("/")
     public ModelAndView home() {
-        ModelAndView modelAndView = new ModelAndView("home");
-        List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned("1").active().list();
+        ModelAndView modelAndView = new ModelAndView("first");
+        List<Task> taskList = taskService.createTaskQuery().taskAssignee(userService.findCurrentUserId()).active().list();
         modelAndView.addObject("taskList", taskList);
         return modelAndView;
     }
@@ -96,7 +99,7 @@ public class HelloController {
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.GET)
     public ModelAndView getStartProcess(@PathVariable String id) {
-        ModelAndView modelAndView = new ModelAndView("veri-girisi");
+        ModelAndView modelAndView = new ModelAndView("form");
         Content content = new Content();
         content.setProcessId(id);
         modelAndView.addObject("model", content);
@@ -105,11 +108,11 @@ public class HelloController {
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.POST)
     public ModelAndView startProcess(@PathVariable String id, @ModelAttribute Content content) {
-        ModelAndView modelAndView = new ModelAndView("redirect:/mytask");
+        ModelAndView modelAndView = new ModelAndView("redirect:/");
         Map<String, Object> variables = new HashMap<>();
         variables.put("whom", content.getWhom());
         variables.put("price", content.getPrice());
-        runtimeService.startProcessInstanceById(id, variables);
+        runtimeService.startProcessInstanceByKey(id, variables);
         return modelAndView;
     }
 
@@ -117,8 +120,24 @@ public class HelloController {
     @RequestMapping(value = "/mytask", method = RequestMethod.GET)
     public ModelAndView getMyTask() {
         ModelAndView modelAndView = new ModelAndView("my-task");
-        List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned("1").active().list();
+        List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned(userService.findCurrentUserId()).active().list();
         modelAndView.addObject("taskList", taskList);
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/task/detail/{id}",method = RequestMethod.GET)
+    public ModelAndView getTaskDetail(@PathVariable String id){
+        ModelAndView modelAndView=new ModelAndView("task");
+        Task task=taskService.createTaskQuery().taskId(id).active().singleResult();
+        modelAndView.addObject("taskModel",task);
+        return modelAndView;
+
+    }
+    @RequestMapping(value = "/task/complete/{id}",method = RequestMethod.GET)
+    public ModelAndView completeTask(@PathVariable String id){
+        ModelAndView modelAndView=new ModelAndView("redirect:/");
+        taskService.complete(id);
+        return modelAndView;
+
     }
 }

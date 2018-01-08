@@ -5,12 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-<div th:each="item : ${taskList}">
-    <span th:text="${item.id}"/> -<span th:text="${item.name}"/>
+<div th:each="item : ${taskModel}">
+    <span th:text="${taskModel.id}"/> - <span th:text="${taskModel.name}"/>
     <br/>
-    <span th:text="${item.description}"/>
+    <span th:text="${taskModel.description}"/>
     <br/>
-    <a th:href="@{'/start/'+${item.id}}">TEst</a>
+    <a th:href="@{'/task/complete/'+${item.id}}">TEst</a>
 </div>
 </body>
 </html>
