@@ -15,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.imageio.ImageIO;
@@ -51,7 +48,7 @@ public class HelloController {
     @RequestMapping("/home")
     public ModelAndView hello() {
         ModelAndView modelAndView = new ModelAndView("first");
-        List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned("1").active().list();
+        List<Task> taskList = taskService.createTaskQuery().taskCandidateOrAssigned("1").active().orderByTaskId().asc().list();
         modelAndView.addObject("taskList", taskList);
         return modelAndView;
     }
@@ -127,10 +124,18 @@ public class HelloController {
 
     @RequestMapping(value = "/task/detail/{id}",method = RequestMethod.GET)
     public ModelAndView getTaskDetail(@PathVariable String id){
-        ModelAndView modelAndView=new ModelAndView("task");
+        ModelAndView modelAndView=new ModelAndView("taskdetail");
         Task task=taskService.createTaskQuery().taskId(id).active().singleResult();
         modelAndView.addObject("taskModel",task);
+        modelAndView.addObject("comments",taskService.getProcessInstanceComments(task.getProcessInstanceId()));
         return modelAndView;
+
+    }
+
+    @RequestMapping(value = "/task/comment/{id}",method = RequestMethod.POST)
+    public void addTaskComment(@RequestBody CommentDto commentDto,@PathVariable String id){
+        Task task=taskService.createTaskQuery().taskId(id).active().singleResult();
+        taskService.addComment(task.getId(), task.getProcessInstanceId(), commentDto.getComment());
 
     }
     @RequestMapping(value = "/task/complete/{id}",method = RequestMethod.GET)

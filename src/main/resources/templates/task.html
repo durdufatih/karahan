@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<div th:each="item : ${taskModel}">
+<div th:object="${taskModel}">
     <span th:text="${taskModel.id}"/> - <span th:text="${taskModel.name}"/>
     <br/>
     <span th:text="${taskModel.description}"/>
