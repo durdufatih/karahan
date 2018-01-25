@@ -9,15 +9,24 @@ import java.util.List;
  *
  * @author Mehmet Fatih Durdu
  */
-public class TaskModel {
+public class TaskModel  {
 
-    private List<Task> taskList;
+    private Task task;
+    private String whom;
 
-    public List<Task> getTaskList() {
-        return taskList;
+    public Task getTask() {
+        return task;
     }
 
-    public void setTaskList(List<Task> taskList) {
-        this.taskList = taskList;
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public String getWhom() {
+        return whom;
+    }
+
+    public void setWhom(String whom) {
+        this.whom = whom;
     }
 }

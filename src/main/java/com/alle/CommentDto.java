@@ -2,7 +2,8 @@ package com.alle;
 
 public class CommentDto {
     private String comment;
-    private String userId;
+    private String userName;
+    private String time;
 
     public String getComment() {
         return comment;
@@ -12,11 +13,19 @@ public class CommentDto {
         this.comment = comment;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

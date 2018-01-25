@@ -42,4 +42,9 @@ public class UserServiceImpl implements UserService{
 		return Integer.toString(user.getId());
 	}
 
+	@Override
+	public User findUser(Integer id) {
+		return userRepository.findOne(id);
+	}
+
 }
