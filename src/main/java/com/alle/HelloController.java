@@ -4,9 +4,10 @@ import com.alle.auth.User;
 import com.alle.auth.UserService;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.*;
+import org.activiti.engine.form.FormProperty;
+import org.activiti.engine.form.TaskFormData;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricDetail;
-import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -19,7 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by fatih.durdu@milliyetemlak.com on 25-Sep-2017
@@ -63,6 +62,8 @@ public class HelloController {
     @Autowired
     private IdentityService identityService;
 
+    @Autowired
+    private FormService formService;
 
 
     @RequestMapping("/detail")
@@ -177,10 +178,36 @@ public class HelloController {
             commentDto.setTime(simpleDateFormat.format(comment.getTime()));
             commentDtoList.add(commentDto);
         }
+        TaskFormData taskFormData = formService.getTaskFormData(task.getId());
+        List<FormProperty> formPropertyList = taskFormData.getFormProperties();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (FormProperty formProperty : formPropertyList) {
+            stringBuilder.append("<div class=\"form-group\">\n");
+            stringBuilder.append("<label for=\"" + formProperty.getId() + "\">" + formProperty.getName() + "</label>\n");
+            //if (formProperty.isWritable()) {
+            stringBuilder.append("<input type=\"text\"");
+            if (!formProperty.isWritable())
+                stringBuilder.append(" disabled ");
+            if (formProperty.isRequired())
+                stringBuilder.append(" required ");
+
+            stringBuilder.append("class=\"form-control\" name=\"" + formProperty.getName() + "\" id=\"" + formProperty.getId() + "\" placeholder=\"" + formProperty.getName() + " Giriniz\"");
+            if (formProperty.getValue() != null)
+                stringBuilder.append(" value=\"" + formProperty.getValue() + "\"");
+            stringBuilder.append("/>\n");
+            if (!formProperty.isWritable())
+                stringBuilder.append(" <input type=\"hidden\" name=" + formProperty.getName() + " value=" + formProperty.getValue() + "> ");
+
+            stringBuilder.append("</div>");
+
+        }
+
+        modelAndView.addObject("form", stringBuilder.toString());
         modelAndView.addObject("commentModel", new CommentDto());
         modelAndView.addObject("comments", commentDtoList);
 
-        //Burası geçmişi göstermeyi amaçlıyor
+        List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery().processInstanceId(task.getProcessInstanceId()).list();
+        List<HistoricDetail> historicDetailList = historyService.createHistoricDetailQuery().processInstanceId(task.getProcessInstanceId()).list();
         List<HistoricActivityInstance> historicProcessInstanceList=historyService.createHistoricActivityInstanceQuery().processInstanceId(task.getProcessInstanceId()).list();
         return modelAndView;
 
@@ -196,9 +223,25 @@ public class HelloController {
         return modelAndView;
 
     }
-    @RequestMapping(value = "/task/complete/{id}",method = RequestMethod.GET)
-    public ModelAndView completeTask(@PathVariable String id){
-        ModelAndView modelAndView=new ModelAndView("redirect:/");
+
+    @RequestMapping(value = "/task/complete/{id}", method = RequestMethod.POST)
+    public ModelAndView postTask(@PathVariable String id, org.apache.catalina.servlet4preview.http.HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("redirect:/");
+        Map<String, Object> map = new HashMap<>();
+        Map<String, String[]> parameters = request.getParameterMap();
+        for (String key : parameters.keySet()) {
+            String[] value = parameters.get(key);
+            map.put(key, value[0]);
+
+        }
+        taskService.complete(id, map);
+        return modelAndView;
+
+    }
+
+    @RequestMapping(value = "/task/complete/{id}", method = RequestMethod.GET)
+    public ModelAndView completeTask(@PathVariable String id) {
+        ModelAndView modelAndView = new ModelAndView("redirect:/");
         taskService.complete(id);
         return modelAndView;
 

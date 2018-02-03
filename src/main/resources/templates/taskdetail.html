@@ -165,6 +165,16 @@
                                                 <br/>
                                                 <span th:text="${taskModel.description}"/>
                                                 <br/>
+                                            <div class="box-body">
+                                                <form th:action="@{'/task/complete/'+${taskModel.taskId}}"
+                                                      method="post">
+                                                    <div th:utext="${form}"></div>
+                                                    <div class="pull-right">
+                                                        <button class="btn btn-default " type="submit">Tamamla</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+
                                         </div>
                                         <div class="col-md-4">
                                             <div class="box-body">

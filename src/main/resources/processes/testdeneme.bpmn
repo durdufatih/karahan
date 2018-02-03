@@ -13,7 +13,17 @@
         <activiti:formProperty id="priority" name="İvedi" type="long"/>
       </extensionElements>
     </userTask>
-    <userTask activiti:assignee="2" activiti:exclusive="true" id="_4" name="Mal Yükleme"/>
+    <userTask activiti:assignee="2" activiti:exclusive="true" id="_4" name="Mal Yükleme">
+       <extensionElements>
+        <activiti:formProperty default="123" id="test" name="test" readable="true" required="true" type="string" writable="false"/>
+        <activiti:formProperty id="price" name="Fiyat" readable="true" required="true" type="long" writable="false"/>
+        <activiti:formProperty id="count" name="Sayısı" readable="true" required="true" type="long" writable="false"/>
+        <activiti:formProperty id="date" name="Tarih" type="date" writable="false"/>
+        <activiti:formProperty id="whom" name="Firma" type="string"/>
+        <activiti:formProperty id="isCreate" name="Döküman Oluşsun mu" type="boolean"/>
+        <activiti:formProperty id="priority" name="İvedi" type="long"/>
+      </extensionElements>
+    </userTask>
     <endEvent id="_5" name="EndEvent"/>
     <sequenceFlow id="_7" sourceRef="userTask" targetRef="_4"/>
     <sequenceFlow id="_8" sourceRef="_4" targetRef="_5"/>

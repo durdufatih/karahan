@@ -6,7 +6,7 @@
     <groupId>com.alle</groupId>
     <artifactId>karahanflour</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>karahanflour</name>
     <description></description>
