@@ -16,6 +16,11 @@ import java.util.List;
 @Controller
 public class DashboardController {
 
+    private static final int SECOND = 1000;
+    private static final int MINUTE = 60 * SECOND;
+    private static final int HOUR = 60 * MINUTE;
+    private static final int DAY = 24 * HOUR;
+
     @Autowired
     private TaskService taskService;
 
@@ -32,7 +37,7 @@ public class DashboardController {
         DashboardModel dashboardModel = new DashboardModel();
         dashboardModel.setCompletedJobCount(historyService.createHistoricTaskInstanceQuery().finished().count());
         dashboardModel.setUnCompletedJobCount(taskService.createTaskQuery().active().count());
-        dashboardModel.setCompletedProcessCount(historyService.createHistoricTaskInstanceQuery().finished().count());
+        dashboardModel.setCompletedProcessCount(historyService.createHistoricProcessInstanceQuery().finished().count());
         List<User> userList = userService.allUser();
         dashboardModel.setPersonCount(new Long(userList.size()));
         List<UserModel> userModelList = new ArrayList<>();
@@ -47,7 +52,7 @@ public class DashboardController {
                 for (HistoricTaskInstance taskInstance : historicTaskInstances) {
                     time = time + taskInstance.getDurationInMillis();
                 }
-                userModel.setTaskCompleteTime(Math.round(time) / historicTaskInstances.size());
+                userModel.setTaskCompleteTime(convertToDate(Math.round(time) / historicTaskInstances.size()));
             }
 
             userModelList.add(userModel);
@@ -55,5 +60,27 @@ public class DashboardController {
         dashboardModel.setUserModel(userModelList);
         modelAndView.addObject("model", dashboardModel);
         return modelAndView;
+    }
+
+    private String convertToDate(long ms){
+
+        StringBuffer text = new StringBuffer("");
+        if (ms > DAY) {
+            text.append(ms / DAY).append(" gün ");
+            ms %= DAY;
+        }
+        if (ms > HOUR) {
+            text.append(ms / HOUR).append(" saat ");
+            ms %= HOUR;
+        }
+        if (ms > MINUTE) {
+            text.append(ms / MINUTE).append(" dk ");
+            ms %= MINUTE;
+        }
+        if (ms > SECOND) {
+            text.append(ms / SECOND).append(" sn ");
+            ms %= SECOND;
+        }
+        return text.toString();
     }
 }

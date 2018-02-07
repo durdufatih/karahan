@@ -5,7 +5,7 @@ public class UserModel {
     private Long startProcessCount;
     private Long completedTaskCount;
     private Long unCompletedTask;
-    private Long taskCompleteTime;
+    private String taskCompleteTime;
 
     public String getName() {
         return name;
@@ -39,11 +39,11 @@ public class UserModel {
         this.unCompletedTask = unCompletedTask;
     }
 
-    public Long getTaskCompleteTime() {
+    public String getTaskCompleteTime() {
         return taskCompleteTime;
     }
 
-    public void setTaskCompleteTime(Long taskCompleteTime) {
+    public void setTaskCompleteTime(String taskCompleteTime) {
         this.taskCompleteTime = taskCompleteTime;
     }
 }
