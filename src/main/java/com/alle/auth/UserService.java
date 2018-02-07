@@ -1,5 +1,7 @@
 package com.alle.auth;
 
+import java.util.List;
+
 public interface UserService {
     User findUserByEmail(String email);
 
@@ -8,4 +10,7 @@ public interface UserService {
     String findCurrentUserId();
 
     User findUser(Integer id);
+
+    List<User> allUser();
+
 }

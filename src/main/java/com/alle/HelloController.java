@@ -32,10 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by fatih.durdu@milliyetemlak.com on 25-Sep-2017
@@ -90,16 +87,19 @@ public class HelloController {
         return new ResponseEntity<byte[]>(imageInByte, headers, HttpStatus.OK);
     }
 
-    @RequestMapping(value = {"/", "/home"})
+    @RequestMapping(value = {"/process"})
     public ModelAndView home() {
         ModelAndView modelAndView = new ModelAndView("first");
         List<Task> taskList = taskService.createTaskQuery().taskAssignee(userService.findCurrentUserId()).active().list();
         List<HistoricTaskInstance> historyList = historyService.createHistoricTaskInstanceQuery().finished().taskAssignee(userService.findCurrentUserId()).list();
         List<TaskModel> taskModelList = new ArrayList<>();
+        List<ProcessDefinition> deployments = repositoryService.createProcessDefinitionQuery().latestVersion().active().list();
         for (Task task : taskList) {
             TaskModel taskModel = new TaskModel();
             taskModel.setTask(task);
-            taskModel.setWhom(runtimeService.getVariable(task.getProcessInstanceId(), "whom").toString());
+            Object title = runtimeService.getVariable(task.getProcessInstanceId(), "Title");
+            if (title != null)
+                taskModel.setTitle(title.toString());
             taskModelList.add(taskModel);
         }
         modelAndView.addObject("taskList", taskModelList);
@@ -120,25 +120,15 @@ public class HelloController {
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.GET)
     public ModelAndView getStartProcess(@PathVariable String id) {
-        ModelAndView modelAndView = new ModelAndView("form");
-        Content content = new Content();
-        content.setProcessId(id);
-        modelAndView.addObject("model", content);
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(id);
+        ModelAndView modelAndView = new ModelAndView("redirect:/process");
         return modelAndView;
     }
 
     @RequestMapping(value = "/start/{id}", method = RequestMethod.POST)
     public ModelAndView startProcess(@PathVariable String id, @ModelAttribute Content content) {
         ModelAndView modelAndView = new ModelAndView("redirect:/");
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("whom", content.getWhom());
-        variables.put("price", content.getPrice());
-        ProcessInstance processInstance=runtimeService.startProcessInstanceByKey(id, variables);
-        Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).active().list().get(0);
-        task.setName(content.getTitle());
-        task.setDescription(content.getDescription());
-        task.setPriority(Integer.parseInt(content.getPriority()));
-        taskService.saveTask(task);
+        ProcessInstance processInstance=runtimeService.startProcessInstanceByKey(id);
         return modelAndView;
     }
 
@@ -178,9 +168,20 @@ public class HelloController {
             commentDto.setTime(simpleDateFormat.format(comment.getTime()));
             commentDtoList.add(commentDto);
         }
+
         TaskFormData taskFormData = formService.getTaskFormData(task.getId());
         List<FormProperty> formPropertyList = taskFormData.getFormProperties();
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<div class=\"form-group\">\n");
+        stringBuilder.append("<label for=\"Title\">Konu</label>\n");
+        stringBuilder.append("<input type=\"text\"");
+        stringBuilder.append(" required ");
+        Optional<FormProperty> itemObject = formPropertyList.stream().filter(item -> item.getName().equals("Title")).findAny();
+        if (itemObject.isPresent())
+            stringBuilder.append(" value=" + itemObject.get().getValue());
+        stringBuilder.append(" class=\"form-control\" name=\"Title\" id=\"Title\" placeholder=\"Konu Giriniz\"/>");
+        stringBuilder.append("</div>");
+
         for (FormProperty formProperty : formPropertyList) {
             stringBuilder.append("<div class=\"form-group\">\n");
             stringBuilder.append("<label for=\"" + formProperty.getId() + "\">" + formProperty.getName() + "</label>\n");
@@ -191,12 +192,12 @@ public class HelloController {
             if (formProperty.isRequired())
                 stringBuilder.append(" required ");
 
-            stringBuilder.append("class=\"form-control\" name=\"" + formProperty.getName() + "\" id=\"" + formProperty.getId() + "\" placeholder=\"" + formProperty.getName() + " Giriniz\"");
+            stringBuilder.append("class=\"form-control\" name=\"" + formProperty.getId() + "\" id=\"" + formProperty.getId() + "\" placeholder=\"" + formProperty.getName() + " Giriniz\"");
             if (formProperty.getValue() != null)
                 stringBuilder.append(" value=\"" + formProperty.getValue() + "\"");
             stringBuilder.append("/>\n");
             if (!formProperty.isWritable())
-                stringBuilder.append(" <input type=\"hidden\" name=" + formProperty.getName() + " value=" + formProperty.getValue() + "> ");
+                stringBuilder.append(" <input type=\"hidden\" name=" + formProperty.getId() + " value=" + formProperty.getValue() + "> ");
 
             stringBuilder.append("</div>");
 
@@ -226,7 +227,7 @@ public class HelloController {
 
     @RequestMapping(value = "/task/complete/{id}", method = RequestMethod.POST)
     public ModelAndView postTask(@PathVariable String id, org.apache.catalina.servlet4preview.http.HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView("redirect:/");
+        ModelAndView modelAndView = new ModelAndView("redirect:/process");
         Map<String, Object> map = new HashMap<>();
         Map<String, String[]> parameters = request.getParameterMap();
         for (String key : parameters.keySet()) {
@@ -234,6 +235,17 @@ public class HelloController {
             map.put(key, value[0]);
 
         }
+        taskService.setVariable(id, "approve", Boolean.TRUE);
+        taskService.complete(id, map);
+        return modelAndView;
+
+    }
+
+    @RequestMapping(value = "/task/reject/{id}", method = RequestMethod.POST)
+    public ModelAndView postTask(@PathVariable String id) {
+        ModelAndView modelAndView = new ModelAndView("redirect:/process");
+        Map<String, Object> map = new HashMap<>();
+        map.put("approve", false);
         taskService.complete(id, map);
         return modelAndView;
 
@@ -241,7 +253,7 @@ public class HelloController {
 
     @RequestMapping(value = "/task/complete/{id}", method = RequestMethod.GET)
     public ModelAndView completeTask(@PathVariable String id) {
-        ModelAndView modelAndView = new ModelAndView("redirect:/");
+        ModelAndView modelAndView = new ModelAndView("redirect:/process");
         taskService.complete(id);
         return modelAndView;
 

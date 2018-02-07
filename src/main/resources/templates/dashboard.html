@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta charset="ISO-8859-1"/>
+    <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <title>Anasayfa</title>
     <!-- Tell the browser to be responsive to screen width -->
@@ -123,8 +122,8 @@
             </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="/"><i class="fa fa-circle-o"></i> Anasayfa</a></li>
-                        <li class="active"><a href="/process"><i class="fa fa-circle-o"></i> İşlemler</a></li>
+                        <li class="active"><a href="/"><i class="fa fa-circle-o"></i> Anasayfa</a></li>
+                        <li><a href="/process"><i class="fa fa-circle-o"></i> İşlemler</a></li>
                     </ul>
                 </li>
             </ul>
@@ -134,188 +133,90 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-            <h1>
-                Anasayfa
-                <small>Genel Ekran</small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="/"><i class="fa fa-dashboard"></i> Anasayfa</a></li>
-                <li class="active">Genel</li>
-            </ol>
-        </section>
+        <div class="row" th:object="${model}">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="ion ion-android-checkbox-blank"></i></span>
 
-        <!-- Main content -->
-        <section class="content">
-            <!-- Small boxes (Stat box) -->
-            <div class="row">
-                <div class="col-lg-3 col-xs-6">
-                    <!-- small box -->
-                    <div class="small-box bg-aqua">
-                        <div class="inner">
-                            <h3>Yeni</h3>
-
-                            <p>Sipariş</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-bag"></i>
-                        </div>
-                        <a href="/start/test123" class="small-box-footer">Başlat <i class="fa fa-arrow-circle-right"></i></a>
+                    <div class="info-box-content">
+                        <span class="info-box-text">TAMAMLANMAYAN <br/>İŞ SAYISI</span>
+                        <span class="info-box-number" th:text="${model.unCompletedJobCount}"><small></small></span>
                     </div>
+                    <!-- /.info-box-content -->
                 </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-xs-6">
-                    <!-- small box -->
-                    <div class="small-box bg-green">
-                        <div class="inner">
-                            <h3>Yeni</h3>
-
-                            <p>İzin</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-stats-bars"></i>
-                        </div>
-                        <a href="/start/myProcess_1" class="small-box-footer">Başlat<i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-xs-6">
-                    <!-- small box -->
-                    <div class="small-box bg-yellow">
-                        <div class="inner">
-                            <h3>Ürün</h3>
-
-                            <p>İptali</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-person-add"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">Başlat <i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <div class="col-lg-3 col-xs-6">
-                    <!-- small box -->
-                    <div class="small-box bg-red">
-                        <div class="inner">
-                            <h3>Mal </h3>
-
-                            <p>Satın Alma</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-pie-graph"></i>
-                        </div>
-                        <a href="#" class="small-box-footer">Başlat<i class="fa fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
+                <!-- /.info-box -->
             </div>
-            <!-- /.row -->
-            <!-- Main row -->
-            <div class="row">
-                <!-- Left col -->
-                <section class="col-lg-6 connectedSortable">
-                    <!-- Custom tabs (Charts with tabs)-->
-                    <div class="box box-primary">
-                        <div class="box-header">
-                            <i class="ion ion-clipboard"></i>
+            <!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="ion ion-android-checkbox"></i></span>
 
-                            <h3 class="box-title">İşlerim</h3>
-
-
-                        </div>
-                        <!-- /.box-header -->
-                        <div class="box-body">
-                            <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
-                            <ul class="todo-list" th:each="item : ${taskList}">
-                                <li>
-                                    <!-- drag handle -->
-                                    <!-- checkbox -->
-                                    <!-- todo text -->
-                                    <span class="text" th:text="${item.title}"/>
-                                    <span class="text" th:text="${item.task.id}"/><span class="text" th:text="${item.task.name}"></span>
-                                    <!-- Emphasis label -->
-                                    <small class="label label-danger" th:text="${item.task.assignee}"><i class="fa fa-clock-o"></i>x</small>
-                                    <!-- General tools such as edit or delete-->
-                                    <div class="tools">
-                                        <a th:href="@{'/task/detail/'+${item.task.id}}"><i class="fa fa-edit"></i></a>
-
-                                    </div>
-                                </li>
-                            </ul>
-
-                        </div>
-                        <!-- /.box-body -->
-                        <div>
-                            <div class="box-tools pull-right">
-                            <ul class="pagination pagination-sm inline">
-                                <li><a href="#">&laquo;</a></li>
-                                <li><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">&raquo;</a></li>
-                            </ul>
-                        </div>
-
-                        </div>
+                    <div class="info-box-content">
+                        <span class="info-box-text">TAMAMLANAN İŞ</span><br/>
+                        <span class="info-box-number" th:text="${model.completedJobCount}"></span>
                     </div>
-
-                </section>
-                <section class="col-lg-6 connectedSortable">
-                    <!-- Custom tabs (Charts with tabs)-->
-                    <div class="box box-primary">
-                        <div class="box-header">
-                            <i class="ion ion-clipboard"></i>
-
-                            <h3 class="box-title">Tamamladığım İşler</h3>
-
-
-                        </div>
-                        <!-- /.box-header -->
-                        <div class="box-body">
-                            <!-- See dist/js/pages/dashboard.js to activate the todoList plugin -->
-                            <ul class="todo-list" th:each="item : ${historyList}">
-                                <li>
-                                    <!-- drag handle -->
-                                    <!-- checkbox -->
-                                    <!-- todo text -->
-                                    <span class="text" th:text="${item.id}"/><span class="text"
-                                                                                   th:text="${item.name}"></span>
-                                    <!-- Emphasis label -->
-                                    <small class="label label-danger" th:text="${item.assignee}"><i
-                                            class="fa fa-clock-o"></i>x
-                                    </small>
-                                    <!-- General tools such as edit or delete-->
-                                </li>
-                            </ul>
-
-                        </div>
-                        <!-- /.box-body -->
-                        <div>
-                            <div class="box-tools pull-right">
-                                <ul class="pagination pagination-sm inline">
-                                    <li><a href="#">&laquo;</a></li>
-                                    <li><a href="#">1</a></li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a href="#">3</a></li>
-                                    <li><a href="#">&raquo;</a></li>
-                                </ul>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-                </section>
-                <!-- /.Left col -->
-                <!-- right col (We are only adding the ID to make the widgets sortable)-->
-                <!-- right col -->
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
             </div>
-            <!-- /.row (main row) -->
+            <!-- /.col -->
 
-        </section>
-        <!-- /.content -->
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="ion ion-android-arrow-dropright-circle"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">BİTEN SÜREÇ</span><br/>
+                        <span class="info-box-number" th:text="${model.completedProcessCount}"></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">ÜYE SAYISI</span><br/>
+                        <span class="info-box-number" th:text="${model.personCount}"></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+        </div>
+
+        <div class="row" >
+            <div class="col-md-4" th:each="item : ${model.userModel}">
+                <!-- Widget: user widget style 1 -->
+                <div class="box box-widget widget-user-2">
+                    <!-- Add the bg color to the header using any of the bg-* classes -->
+                    <div class="widget-user-header bg-yellow">
+                        <div class="widget-user-image">
+                            <img class="img-circle" src="../dist/img/user7-128x128.jpg" alt="User Avatar"/>
+                        </div>
+                        <!-- /.widget-user-image -->
+                        <h3 class="widget-user-username" th:text="${item.name}"></h3>
+                    </div>
+                    <div class="box-footer no-padding">
+                        <ul class="nav nav-stacked">
+                            <li><a href="#">Tamamladığı İşler <span class="pull-right badge bg-blue" th:text="${item.completedTaskCount}"></span></a></li>
+                            <li><a href="#">Devam Eden İşler <span class="pull-right badge bg-aqua" th:text="${item.unCompletedTask}"></span></a></li>
+                            <li><a href="#">Ortalama Tamamlama Süresi <span class="pull-right badge bg-green" th:text="${item.taskCompleteTime}"></span></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /.widget-user -->
+            </div>
+            <!-- /.col -->
+            <!-- /.col -->
+        </div>
     </div>
     <!-- /.content-wrapper -->
     <footer class="main-footer">
@@ -360,11 +261,14 @@
 <script src="bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <!-- FastClick -->
 <script src="bower_components/fastclick/lib/fastclick.js"></script>
+
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
+<script src="bower_components/chart.js/Chart.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="dist/js/demo.js"></script>
+
 </body>
 </html>

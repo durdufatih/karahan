@@ -12,7 +12,7 @@ import java.util.List;
 public class TaskModel  {
 
     private Task task;
-    private String whom;
+    private String title;
 
     public Task getTask() {
         return task;
@@ -22,11 +22,11 @@ public class TaskModel  {
         this.task = task;
     }
 
-    public String getWhom() {
-        return whom;
+    public String getTitle() {
+        return title;
     }
 
-    public void setWhom(String whom) {
-        this.whom = whom;
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
